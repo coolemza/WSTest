@@ -1,24 +1,11 @@
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.websocket.WebSockets
-import io.ktor.client.features.websocket.ws
 import io.ktor.client.features.websocket.wss
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readText
 import kotlinx.coroutines.channels.filterNotNull
 import kotlinx.coroutines.channels.map
-import kotlinx.coroutines.runBlocking
-import org.json.simple.JSONObject
-
-enum class Parameters {
-    key,
-    port,
-
-    initDb,
-    saveState,
-    debug
-}
 
 suspend fun main() {
     try {
