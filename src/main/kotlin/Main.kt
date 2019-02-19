@@ -4,27 +4,33 @@ import io.ktor.client.features.websocket.WebSockets
 import io.ktor.client.features.websocket.wss
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readText
-import kotlinx.coroutines.channels.filterNotNull
-import kotlinx.coroutines.channels.map
+import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-suspend fun main() {
-    try {
-        println("start")
+@KtorExperimentalAPI
+suspend fun main() = try {
+    println("start")
 
-        val client = HttpClient(CIO).config { install(WebSockets) }
-
+    repeat(10) { cnt ->
+        println("try #$cnt")
+        val client = HttpClient( CIO).config { install(WebSockets) }
         client.wss(host = "echo.websocket.org") {
-            send(Frame.Text("Hello World"))
+            repeat(10) { send(Frame.Text("Hello World $it")) }
 
-            for (message in incoming.map { it as? Frame.Text }.filterNotNull()) {
-                println(message.readText())
-            }
+            GlobalScope.launch(Dispatchers.IO) {
+                repeat(10) {
+                    println((incoming.receive() as Frame.Text).readText())
+                }
+            }.join()
         }
-
-        println("start finished")
-
-    } catch (e: Exception) {
-        e.printStackTrace()
-        println("stopped abnormal")
+        client.close()
     }
+
+    println("start finished")
+
+} catch (e: Exception) {
+    e.printStackTrace()
+    println("stopped abnormal")
 }
