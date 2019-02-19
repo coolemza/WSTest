@@ -1,8 +1,11 @@
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.websocket.WebSockets
+import io.ktor.client.features.websocket.webSocketRawSession
 import io.ktor.client.features.websocket.wss
+import io.ktor.http.cio.websocket.CloseReason
 import io.ktor.http.cio.websocket.Frame
+import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.readText
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.Dispatchers
@@ -24,8 +27,9 @@ suspend fun main() = try {
                     println((incoming.receive() as Frame.Text).readText())
                 }
             }.join()
+
+            close(CloseReason(1000, "stop"))
         }
-        client.close()
     }
 
     println("start finished")
