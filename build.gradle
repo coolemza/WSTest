@@ -77,6 +77,10 @@ dependencies {
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0'
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10'
+}
+
 test {
     useJUnitPlatform()
 
